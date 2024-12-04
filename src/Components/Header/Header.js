@@ -7,24 +7,42 @@ import logo from '../../Images/Logo/Rettai Pillayar logo.png';
 const StyledHeader = styled.header`
   .welcome-banner {
     color: #8B4513;
+    font-size: 0.8rem;
+    @media (min-width: 768px) {
+      font-size: 0.9rem;
+    }
   }
 
   .logo-image {
-    height: 40px;
+    height: 30px;
     @media (min-width: 768px) {
-      height: 50px;
+      height: 40px;
     }
     @media (min-width: 992px) {
-      height: 60px;
+      height: 50px;
     }
   }
 
   .store-name {
     color: #FF0000;
+    font-size: 1rem;
+    @media (min-width: 768px) {
+      font-size: 1.2rem;
+    }
+    @media (min-width: 992px) {
+      font-size: 1.5rem;
+    }
   }
 
   .store-subname {
     color: #000080;
+    font-size: 0.8rem;
+    @media (min-width: 768px) {
+      font-size: 0.9rem;
+    }
+    @media (min-width: 992px) {
+      font-size: 1rem;
+    }
   }
 
   .custom-navbar {
@@ -32,7 +50,7 @@ const StyledHeader = styled.header`
   }
 
   .nav-link, .nav-item {
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 500;
     transition: color 0.3s ease;
     color: white !important;
@@ -40,7 +58,12 @@ const StyledHeader = styled.header`
     align-items: center;
     justify-content: center;
     height: 100%;
-    padding: 0.75rem 1.5rem !important;
+    padding: 0.5rem 1rem !important;
+    
+    @media (min-width: 992px) {
+      font-size: 1rem;
+      padding: 0.75rem 1.5rem !important;
+    }
     
     &:hover, &:focus, &.active {
       color: #F4D35E !important;
@@ -48,7 +71,6 @@ const StyledHeader = styled.header`
     }
   }
 
-  /* Bootstrap Hover Dropdown */
   .dropdown:hover .dropdown-menu {
     display: block;
   }
@@ -69,10 +91,15 @@ const StyledHeader = styled.header`
 
   .dropdown-item {
     color: white;
-    font-size: 1.25rem;
+    font-size: 0.9rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     font-family: 'Lora', serif;
     text-align: center;
+    padding: 0.5rem 1rem;
+    
+    @media (min-width: 992px) {
+      font-size: 1rem;
+    }
     
     &:last-child {
       border-bottom: none;
@@ -81,6 +108,28 @@ const StyledHeader = styled.header`
     &:hover, &:focus, &.active {
       background-color: transparent;
       color: #F4D35E;
+    }
+  }
+
+  .mobile-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .mobile-action-icon {
+    font-size: 1.2rem;
+    color: white;
+  }
+
+  .mobile-sign-in {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .desktop-heart-icon {
+    @media (min-width: 992px) {
+      color: #FF0000 !important;
     }
   }
 `;
@@ -95,16 +144,13 @@ const Header = () => {
 
   return (
     <StyledHeader>
-      {/* Welcome Banner */}
       <div className="py-2 text-center welcome-banner">
         <small>Welcome to Shree Rettai Pillaiyar</small>
       </div>
 
-      {/* Main Header */}
       <Navbar bg="white" expand="lg" className="py-2 border-bottom">
         <Container fluid>
           <Row className="w-100 align-items-center g-2">
-            {/* Logo Section */}
             <Col xs={12} lg={3} className="text-center text-lg-start">
               <Navbar.Brand href="/" className="d-flex align-items-center justify-content-center justify-content-lg-start">
                 <img
@@ -113,17 +159,16 @@ const Header = () => {
                   className="d-inline-block me-2 logo-image"
                 />
                 <div>
-                  <h1 className="mb-0 fs-4 fw-bold store-name">
+                  <h1 className="mb-0 fw-bold store-name">
                     SHREE RETTAI PILLAIYAR
                   </h1>
-                  <h2 className="mb-0 fs-6 store-subname">
+                  <h2 className="mb-0 store-subname">
                     POOJA STORES
                   </h2>
                 </div>
               </Navbar.Brand>
             </Col>
 
-            {/* Search Section */}
             <Col xs={12} lg={6}>
               <Form onSubmit={handleSearch} className="px-2">
                 <InputGroup>
@@ -147,7 +192,6 @@ const Header = () => {
               </Form>
             </Col>
 
-            {/* Actions Section */}
             <Col xs={12} lg={3} className="d-none d-lg-block">
               <div className="d-flex align-items-center justify-content-end gap-4">
                 <Nav.Link href="/cart" className="position-relative p-0">
@@ -156,9 +200,9 @@ const Header = () => {
                     0
                   </span>
                 </Nav.Link>
-                {/* <Nav.Link href="/wishlist" className="p-0 text-danger">
-                  <FaHeart size={24} />
-                </Nav.Link> */}
+                <Nav.Link href="/wishlist" className="p-0">
+                  <FaHeart className="desktop-heart-icon" size={24} />
+                </Nav.Link>
                 <Button 
                   variant="danger" 
                   href='/admin'
@@ -174,36 +218,35 @@ const Header = () => {
         </Container>
       </Navbar>
 
-      {/* Navigation Menu */}
       <Navbar expand="lg" className="py-0 custom-navbar">
         <Container fluid className="px-2">
-          {/* Mobile Navigation */}
           <div className="d-flex d-lg-none align-items-center w-100 py-2">
             <Navbar.Toggle 
               aria-controls="basic-navbar-nav-2" 
               className="border-light me-3"
             />
-            <div className="d-flex align-items-center gap-3 ms-auto">
+            <div className="mobile-actions ms-auto">
               <Nav.Link href="/cart" className="position-relative p-0">
-                <FaShoppingCart size={20} className="text-white" />
+                <FaShoppingCart className="mobile-action-icon" />
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   0
                 </span>
               </Nav.Link>
               <Nav.Link href="/wishlist" className="p-0">
-                <FaHeart size={20} className="text-white" />
+                <FaHeart className="mobile-action-icon" />
               </Nav.Link>
               <Button 
                 variant="outline-light" 
                 size="sm"
-                className="rounded-pill bg-light text-danger"
+                className="rounded-pill bg-light text-danger mobile-sign-in"
+                href='/admin'
+                target='blank'
               >
                 Sign In
               </Button>
             </div>
           </div>
 
-          {/* Desktop Navigation */}
           <Navbar.Collapse id="basic-navbar-nav-2">
             <Nav className="justify-content-around w-100">
               <Nav.Item>
@@ -239,3 +282,4 @@ const Header = () => {
 };
 
 export default Header;
+

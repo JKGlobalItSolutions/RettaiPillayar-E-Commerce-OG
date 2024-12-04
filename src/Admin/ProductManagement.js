@@ -218,14 +218,17 @@ const ProductManagement = () => {
               <td>{product.page}</td>
               <td>
                 <Button
-                  variant="warning"
-                  className="me-2 btn-edit"
+                style={{backgroundColor:"#A41E19",border:"none"}}
+                 variant='secondary'
+                
+                  className="me-2 btn-edit text-light "
                   onClick={() => handleEdit(product)}
                 >
                   Edit
                 </Button>
                 <Button
                   variant="danger"
+                  style={{backgroundColor:"black",border:"none"}}
                   className="btn-delete"
                   onClick={async () => {
                     if (window.confirm('Are you sure you want to delete this product?')) {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Table } from 'react-bootstrap';
+import { Form, Button, Table, Modal } from 'react-bootstrap';
 import { db } from '../firebase/firebase';
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where, getDocsFromCache } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
 import styled from 'styled-components';
 
 const StyledCategoryManagement = styled.div`
@@ -55,8 +55,9 @@ const StyledCategoryManagement = styled.div`
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState('');
-  const [editCategoryId, setEditCategoryId] = useState(null);
-  const [editCategoryName, setEditCategoryName] = useState('');
+  const [editCategory, setEditCategory] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalAction, setModalAction] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -96,8 +97,15 @@ const CategoryManagement = () => {
   };
 
   const handleEditCategory = (category) => {
-    setEditCategoryId(category.id);
-    setEditCategoryName(category.name);
+    setEditCategory(category);
+    setModalAction('edit');
+    setShowModal(true);
+  };
+
+  const handleDeleteCategory = (category) => {
+    setEditCategory(category);
+    setModalAction('delete');
+    setShowModal(true);
   };
 
   const updateProductsCollection = async (oldCategoryName, newCategoryName) => {
@@ -118,26 +126,24 @@ const CategoryManagement = () => {
     }
   };
 
-  const handleUpdateCategory = async (e) => {
-    e.preventDefault();
-    if (editCategoryName.trim() === '') {
+  const handleUpdateCategory = async () => {
+    if (editCategory.name.trim() === '') {
       alert('Please enter a category name.');
       return;
     }
     try {
-      const categoryRef = doc(db, 'categories', editCategoryId);
+      const categoryRef = doc(db, 'categories', editCategory.id);
 
       // Get the old category name
-      const oldCategoryName = categories.find((category) => category.id === editCategoryId)?.name;
+      const oldCategoryName = categories.find((category) => category.id === editCategory.id)?.name;
 
       // Update the category name in the categories collection
-      await updateDoc(categoryRef, { name: editCategoryName });
+      await updateDoc(categoryRef, { name: editCategory.name });
 
       // Update the category name in the products collection
-      await updateProductsCollection(oldCategoryName, editCategoryName);
+      await updateProductsCollection(oldCategoryName, editCategory.name);
 
-      setEditCategoryId(null);
-      setEditCategoryName('');
+      setShowModal(false);
       fetchCategories();
       alert('Category updated successfully!');
     } catch (error) {
@@ -146,17 +152,16 @@ const CategoryManagement = () => {
     }
   };
 
-  const handleDeleteCategory = async (categoryId) => {
-    if (window.confirm('Are you sure you want to delete this category?')) {
-      try {
-        const categoryRef = doc(db, 'categories', categoryId);
-        await deleteDoc(categoryRef);
-        fetchCategories();
-        alert('Category deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting category:', error);
-        alert('Error deleting category. Please try again.');
-      }
+  const handleConfirmDelete = async () => {
+    try {
+      const categoryRef = doc(db, 'categories', editCategory.id);
+      await deleteDoc(categoryRef);
+      setShowModal(false);
+      fetchCategories();
+      alert('Category deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      alert('Error deleting category. Please try again.');
     }
   };
 
@@ -164,46 +169,21 @@ const CategoryManagement = () => {
     <StyledCategoryManagement>
       <h3>Category Management</h3>
       
-      {editCategoryId ? (
-        <Form onSubmit={handleUpdateCategory} className="mb-4">
-          <Form.Group>
-            <Form.Label>Edit Category Name</Form.Label>
-            <Form.Control
-              type="text"
-              value={editCategoryName}
-              onChange={(e) => setEditCategoryName(e.target.value)}
-              placeholder="Enter category name"
-              required
-            />
-          </Form.Group>
-          <Button type="submit" variant="primary" className="mt-3">
-            Update Category
-          </Button>
-          <Button
-            variant="secondary"
-            className="mt-3 ms-2"
-            onClick={() => setEditCategoryId(null)}
-          >
-            Cancel
-          </Button>
-        </Form>
-      ) : (
-        <Form onSubmit={handleAddCategory} className="mb-4">
-          <Form.Group>
-            <Form.Label>Category Name</Form.Label>
-            <Form.Control
-              type="text"
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              placeholder="Enter new category name"
-              required
-            />
-          </Form.Group>
-          <Button type="submit" variant="primary" className="mt-3">
-            Add Category
-          </Button>
-        </Form>
-      )}
+      <Form onSubmit={handleAddCategory} className="mb-4">
+        <Form.Group>
+          <Form.Label>Category Name</Form.Label>
+          <Form.Control
+            type="text"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="Enter new category name"
+            required
+          />
+        </Form.Group>
+        <Button type="submit" variant="primary" className="mt-3">
+          Add Category
+        </Button>
+      </Form>
       
       <Table striped bordered hover className="mt-4">
         <thead>
@@ -228,7 +208,7 @@ const CategoryManagement = () => {
                 <Button
                   style={{backgroundColor:"black",border:"none"}}
                   size="sm"
-                  onClick={() => handleDeleteCategory(category.id)}
+                  onClick={() => handleDeleteCategory(category)}
                 >
                   Delete
                 </Button>
@@ -237,8 +217,47 @@ const CategoryManagement = () => {
           ))}
         </tbody>
       </Table>
+
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>{modalAction === 'edit' ? 'Edit Category' : 'Delete Category'}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {modalAction === 'edit' ? (
+            <Form>
+              <Form.Group>
+                <Form.Label>Category Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={editCategory?.name || ''}
+                  onChange={(e) => setEditCategory({...editCategory, name: e.target.value})}
+                  placeholder="Enter category name"
+                  required
+                />
+              </Form.Group>
+            </Form>
+          ) : (
+            <p>Are you sure you want to delete the category "{editCategory?.name}"?</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          {modalAction === 'edit' ? (
+            <Button variant="primary" onClick={handleUpdateCategory}>
+              Update
+            </Button>
+          ) : (
+            <Button variant="danger" onClick={handleConfirmDelete}>
+              Delete
+            </Button>
+          )}
+        </Modal.Footer>
+      </Modal>
     </StyledCategoryManagement>
   );
 };
 
 export default CategoryManagement;
+

@@ -1,11 +1,12 @@
-import React from 'react';
-import { Nav } from 'react-bootstrap';
-import styled from 'styled-components';
-import { Home, Box, Settings } from 'lucide-react';
+import React from "react";
+import { Nav } from "react-bootstrap";
+import styled from "styled-components";
+import { Home, Box, Settings } from "lucide-react";
+import logo from "../Images/Logo/Rettai Pillayar logo.png";
 
 const StyledSidebar = styled.div`
   background-color: rgb(163, 29, 24);
- 
+
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   padding: 2rem;
   height: 100%;
@@ -21,7 +22,8 @@ const StyledSidebar = styled.div`
     align-items: center;
     margin-bottom: 0.5rem;
 
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       color: #ffffff;
       background-color: rgba(255, 255, 255, 0.1);
     }
@@ -54,28 +56,36 @@ const StyledSidebar = styled.div`
 const Sidebar = ({ activePage, setActivePage }) => {
   return (
     <StyledSidebar>
+      <div className="text-center">
+        <img
+          style={{ height: "100px" }}
+          className="img-fluid text-center "
+          src={logo}
+          alt=""
+        />
+      </div>
       <div className="brand">
         <Settings size={24} />
         Admin Panel
       </div>
       <Nav className="flex-column">
         <Nav.Link
-          className={activePage === 'dashboard' ? 'active' : ''}
-          onClick={() => setActivePage('dashboard')}
+          className={activePage === "dashboard" ? "active" : ""}
+          onClick={() => setActivePage("dashboard")}
         >
           <Home size={18} />
           Dashboard
         </Nav.Link>
         <Nav.Link
-          className={activePage === 'categories' ? 'active' : ''}
-          onClick={() => setActivePage('categories')}
+          className={activePage === "categories" ? "active" : ""}
+          onClick={() => setActivePage("categories")}
         >
           <Box size={18} />
           Categories
         </Nav.Link>
         <Nav.Link
-          className={activePage === 'products' ? 'active' : ''}
-          onClick={() => setActivePage('products')}
+          className={activePage === "products" ? "active" : ""}
+          onClick={() => setActivePage("products")}
         >
           <Box size={18} />
           Products
@@ -86,4 +96,3 @@ const Sidebar = ({ activePage, setActivePage }) => {
 };
 
 export default Sidebar;
-
