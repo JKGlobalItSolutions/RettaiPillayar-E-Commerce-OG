@@ -64,6 +64,56 @@ const StyledProductManagement = styled.div`
       border-color: #bd2130;
     }
   }
+
+  @media (max-width: 768px) {
+    h3 {
+      font-size: 1.5rem;
+    }
+    .btn-primary {
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+    }
+    .table {
+      font-size: 0.9rem;
+    }
+    .product-image-preview {
+      max-width: 60px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    h3 {
+      font-size: 1.3rem;
+    }
+    .btn-primary {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+    }
+    .table {
+      font-size: 0.8rem;
+    }
+    .product-image-preview {
+      max-width: 50px;
+    }
+  }
+`;
+
+const ResponsiveTable = styled(Table)`
+  @media (max-width: 768px) {
+    th, td {
+      padding: 0.5rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    th, td {
+     
+    }
+    .btn {
+      padding: 0.2rem 0.5rem;
+      font-size: 0.7rem;
+    }
+  }
 `;
 
 const ProductManagement = () => {
@@ -77,10 +127,10 @@ const ProductManagement = () => {
   const [productPrice, setProductPrice] = useState('');
   const [productOriginalPrice, setProductOriginalPrice] = useState('');
   const [productCategory, setProductCategory] = useState('');
-  const [productPage, setProductPage] = useState(''); // New Page field
+  const [productPage, setProductPage] = useState('');
   const [editingProduct, setEditingProduct] = useState(null);
 
-  const pages = ['Panjaloga', 'Rudraksha', 'Karungali', 'Statues', 'Pure Silver', 'Maalai']; // Page options
+  const pages = ['Panjaloga', 'Rudraksha', 'Karungali', 'Statues', 'Pure Silver', 'Maalai'];
 
   useEffect(() => {
     fetchProducts();
@@ -141,7 +191,7 @@ const ProductManagement = () => {
         price: parseFloat(productPrice),
         originalPrice: parseFloat(productOriginalPrice),
         category: productCategory,
-        page: productPage, // Store selected page value
+        page: productPage,
       };
 
       if (editingProduct) {
@@ -170,7 +220,7 @@ const ProductManagement = () => {
     setProductPrice('');
     setProductOriginalPrice('');
     setProductCategory('');
-    setProductPage(''); // Reset Page field
+    setProductPage('');
     setEditingProduct(null);
   };
 
@@ -181,19 +231,19 @@ const ProductManagement = () => {
     setProductPrice(product.price.toString());
     setProductOriginalPrice(product.originalPrice.toString());
     setProductCategory(product.category);
-    setProductPage(product.page || ''); // Populate Page field
+    setProductPage(product.page || '');
     setShowModal(true);
   };
 
   return (
-    <StyledProductManagement>
+    <StyledProductManagement  >
       <h3>Product Management</h3>
       <Button variant="primary" onClick={() => setShowModal(true)}>
         Add New Product
       </Button>
 
       <h3 className="mt-5">Product List</h3>
-      <Table striped bordered hover responsive>
+      <ResponsiveTable striped bordered hover responsive>
         <thead>
           <tr>
             <th>Image</th>
@@ -218,10 +268,9 @@ const ProductManagement = () => {
               <td>{product.page}</td>
               <td>
                 <Button
-                style={{backgroundColor:"#A41E19",border:"none"}}
-                 variant='secondary'
-                
-                  className="me-2 btn-edit text-light "
+                  style={{backgroundColor:"#A41E19",border:"none"}}
+                  variant='secondary'
+                  className="me-2 btn-edit text-light"
                   onClick={() => handleEdit(product)}
                 >
                   Edit
@@ -254,7 +303,7 @@ const ProductManagement = () => {
             </tr>
           ))}
         </tbody>
-      </Table>
+      </ResponsiveTable>
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
@@ -343,3 +392,4 @@ const ProductManagement = () => {
 };
 
 export default ProductManagement;
+

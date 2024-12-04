@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 
 // Import Bootstrap CSS
@@ -17,25 +17,48 @@ import Statues from './Pages/Statues';
 import PureSilver from './Pages/PureSilver';
 import Maalai from './Pages/Maalai';
 
+// Import auth context
+import { AuthProvider, useAuth } from './Auth/AuthContext';
+import Login from './Admin/Login';
+
+// PrivateRoute component
+const PrivateRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
+  return user ? (
+    <>
+     
+      {children}
+    </>
+  ) : (
+    <Navigate to="/login" />
+  );
+};
+
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/panjaloga" element={<Panchaloga />} />
-          <Route path="/rudh" element={<Rudraksha />} />
-          <Route path="/karungali" element={<Karungali />} />
-          <Route path="/statues" element={<Statues />} />
-          <Route path="/puresilver" element={<PureSilver />} />
-          <Route path="/maalai" element={<Maalai />} />
-          <Route path="/admin" element={<AdminPanel />} />
-
-          {/* Add other routes here */}
-        </Routes>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+            <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
+            <Route path="/panjaloga" element={<PrivateRoute><Panchaloga /></PrivateRoute>} />
+            <Route path="/rudh" element={<PrivateRoute><Rudraksha /></PrivateRoute>} />
+            <Route path="/karungali" element={<PrivateRoute><Karungali /></PrivateRoute>} />
+            <Route path="/statues" element={<PrivateRoute><Statues /></PrivateRoute>} />
+            <Route path="/puresilver" element={<PrivateRoute><PureSilver /></PrivateRoute>} />
+            <Route path="/maalai" element={<PrivateRoute><Maalai /></PrivateRoute>} />
+            <Route path="/admin" element={<PrivateRoute><AdminPanel /></PrivateRoute>} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

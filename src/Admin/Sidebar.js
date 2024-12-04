@@ -1,16 +1,25 @@
 import React from "react";
 import { Nav } from "react-bootstrap";
 import styled from "styled-components";
-import { Home, Box, Settings } from "lucide-react";
+import { Home, Box, Settings, X } from 'lucide-react';
 import logo from "../Images/Logo/Rettai Pillayar logo.png";
 
 const StyledSidebar = styled.div`
   background-color: rgb(163, 29, 24);
-
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   padding: 2rem;
   height: 100%;
-  min-height: calc(100vh - 4rem);
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+
+  @media (max-width: 991px) {
+    transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(-100%)')};
+  }
 
   .nav-link {
     color: #e0e0e0;
@@ -51,15 +60,33 @@ const StyledSidebar = styled.div`
       margin-right: 0.5rem;
     }
   }
+
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: none;
+
+    @media (max-width: 991px) {
+      display: block;
+    }
+  }
 `;
 
-const Sidebar = ({ activePage, setActivePage }) => {
+const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
   return (
-    <StyledSidebar>
+    <StyledSidebar isOpen={isOpen}>
+      <button className="close-btn" onClick={() => setIsOpen(false)}>
+        <X size={24} />
+      </button>
       <div className="text-center">
         <img
           style={{ height: "100px" }}
-          className="img-fluid text-center "
+          className="img-fluid text-center"
           src={logo}
           alt=""
         />
@@ -71,21 +98,30 @@ const Sidebar = ({ activePage, setActivePage }) => {
       <Nav className="flex-column">
         <Nav.Link
           className={activePage === "dashboard" ? "active" : ""}
-          onClick={() => setActivePage("dashboard")}
+          onClick={() => {
+            setActivePage("dashboard");
+            setIsOpen(false);
+          }}
         >
           <Home size={18} />
           Dashboard
         </Nav.Link>
         <Nav.Link
           className={activePage === "categories" ? "active" : ""}
-          onClick={() => setActivePage("categories")}
+          onClick={() => {
+            setActivePage("categories");
+            setIsOpen(false);
+          }}
         >
           <Box size={18} />
           Categories
         </Nav.Link>
         <Nav.Link
           className={activePage === "products" ? "active" : ""}
-          onClick={() => setActivePage("products")}
+          onClick={() => {
+            setActivePage("products");
+            setIsOpen(false);
+          }}
         >
           <Box size={18} />
           Products

@@ -50,6 +50,48 @@ const StyledCategoryManagement = styled.div`
       vertical-align: middle;
     }
   }
+
+  @media (max-width: 768px) {
+    h3 {
+      font-size: 1.5rem;
+    }
+
+    .btn-primary {
+      padding: 0.4rem 1rem;
+    }
+
+    .table {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .table {
+      font-size: 0.8rem;
+    }
+
+    .btn-primary, .btn-danger {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+    }
+  }
+`;
+
+const ResponsiveTable = styled(Table)`
+  @media (max-width: 576px) {
+    th, td {
+      padding: 0.5rem;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .btn-group .btn {
+      margin-bottom: 0.5rem;
+    }
+  }
 `;
 
 const CategoryManagement = () => {
@@ -185,7 +227,7 @@ const CategoryManagement = () => {
         </Button>
       </Form>
       
-      <Table striped bordered hover className="mt-4">
+      <ResponsiveTable striped bordered hover className="mt-4">
         <thead>
           <tr>
             <th>Category Name</th>
@@ -197,26 +239,28 @@ const CategoryManagement = () => {
             <tr key={category.id}>
               <td>{category.name}</td>
               <td>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => handleEditCategory(category)}
-                  className="me-2"
-                >
-                  Edit
-                </Button>
-                <Button
-                  style={{backgroundColor:"black",border:"none"}}
-                  size="sm"
-                  onClick={() => handleDeleteCategory(category)}
-                >
-                  Delete
-                </Button>
+                <div className="btn-group">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleEditCategory(category)}
+                    className="me-2"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    style={{backgroundColor:"black",border:"none"}}
+                    size="sm"
+                    onClick={() => handleDeleteCategory(category)}
+                  >
+                    Delete
+                  </Button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
-      </Table>
+      </ResponsiveTable>
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>

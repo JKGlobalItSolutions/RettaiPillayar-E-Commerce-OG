@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import styled from 'styled-components';
-import Sidebar from './Sidebar';
+import Sidebar from '../Admin/Sidebar';
+import Navbar from '../Admin/Navbar';
 import Dashboard from './Dashboard';
 import CategoryManagement from './CategoryManagement';
 import ProductManagement from './ProductManagement';
@@ -13,6 +14,11 @@ const StyledAdminPanel = styled.div`
   .content-area {
     padding: 2rem;
     transition: all 0.3s ease;
+    margin-left: 250px;
+
+    @media (max-width: 991px) {
+      margin-left: 0;
+    }
   }
 
   .panel-container {
@@ -20,7 +26,7 @@ const StyledAdminPanel = styled.div`
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     padding: 2rem;
-    height: calc(100vh - 4rem);
+    min-height: calc(100vh - 4rem);
     overflow-y: auto;
   }
 
@@ -39,26 +45,32 @@ const StyledAdminPanel = styled.div`
 
 const AdminPanel = () => {
   const [activePage, setActivePage] = useState('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <StyledAdminPanel>
-      <Container fluid>
-        <Row>
-          <Col md={3} lg={2} className="p-0">
-            <Sidebar activePage={activePage} setActivePage={setActivePage} />
-          </Col>
-          <Col md={9} lg={10} className="content-area">
-            <div className="panel-container">
-              {activePage === 'dashboard' && <Dashboard />}
-              {activePage === 'categories' && <CategoryManagement />}
-              {activePage === 'products' && <ProductManagement />}
-            </div>
-          </Col>
-        </Row>
-      </Container>
+      <Sidebar
+        activePage={activePage}
+        setActivePage={setActivePage}
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+      />
+      <div className="content-area">
+        <Navbar setIsOpen={setIsSidebarOpen} />
+        <Container fluid>
+          <Row>
+            <Col>
+              <div className="panel-container">
+                {activePage === 'dashboard' && <Dashboard />}
+                {activePage === 'categories' && <CategoryManagement />}
+                {activePage === 'products' && <ProductManagement />}
+              </div>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     </StyledAdminPanel>
   );
 };
 
 export default AdminPanel;
-

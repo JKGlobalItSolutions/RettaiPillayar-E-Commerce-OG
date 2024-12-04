@@ -205,7 +205,7 @@ const Header = () => {
                 </Nav.Link>
                 <Button 
                   variant="danger" 
-                  href='/admin'
+                  href='/login'
                   target='blank'
                   className="rounded-pill px-4"
                   style={{ backgroundColor: '#B22222' }}
@@ -239,7 +239,7 @@ const Header = () => {
                 variant="outline-light" 
                 size="sm"
                 className="rounded-pill bg-light text-danger mobile-sign-in"
-                href='/admin'
+                href='/login'
                 target='blank'
               >
                 Sign In

@@ -31,6 +31,47 @@ const StyledDashboard = styled.div`
     font-weight: bold;
     color: #333;
   }
+
+  @media (max-width: 768px) {
+    padding: 1rem 0;
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+    }
+
+    .card-text {
+      font-size: 1.5rem;
+    }
+  }
+`;
+
+const ChartContainer = styled.div`
+  width: 100%;
+  height: 300px;
+
+  @media (max-width: 768px) {
+    height: 250px;
+  }
+
+  @media (max-width: 576px) {
+    display: none;
+  }
+`;
+
+const MobileMessage = styled.p`
+  display: none;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+
+  @media (max-width: 576px) {
+    display: block;
+  }
 `;
 
 const Dashboard = () => {
@@ -72,10 +113,10 @@ const Dashboard = () => {
 
   return (
     <StyledDashboard>
-      <Container>
+      <Container fluid>
         <h2>Dashboard</h2>
         <Row>
-          <Col md={4}>
+          <Col xs={12} sm={6} md={4}>
             <Card>
               <Card.Body>
                 <Card.Title>Total Products</Card.Title>
@@ -83,7 +124,7 @@ const Dashboard = () => {
               </Card.Body>
             </Card>
           </Col>
-          <Col md={4}>
+          <Col xs={12} sm={6} md={4}>
             <Card>
               <Card.Body>
                 <Card.Title>Total Categories</Card.Title>
@@ -97,16 +138,19 @@ const Dashboard = () => {
             <Card>
               <Card.Body>
                 <Card.Title>Products per Page</Card.Title>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={pageProductCounts}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value" fill="#A41E19" name="Products" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <ChartContainer>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={pageProductCounts}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                      <YAxis tick={{ fontSize: 12 }} />
+                      <Tooltip />
+                      <Legend wrapperStyle={{ fontSize: 12 }} />
+                      <Bar dataKey="value" fill="#A41E19" name="Products" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+                <MobileMessage>Chart not available on mobile devices. Please view on a larger screen.</MobileMessage>
               </Card.Body>
             </Card>
           </Col>
