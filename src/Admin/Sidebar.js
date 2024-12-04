@@ -1,7 +1,10 @@
-import React from "react";
-import { Nav } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import { Nav, Modal, Button } from "react-bootstrap";
 import styled from "styled-components";
-import { Home, Box, Settings, X } from 'lucide-react';
+import { Home, Box, Settings, X, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase/firebase';
 import logo from "../Images/Logo/Rettai Pillayar logo.png";
 
 const StyledSidebar = styled.div`
@@ -78,57 +81,123 @@ const StyledSidebar = styled.div`
 `;
 
 const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+        navigate('/login', { replace: true });
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
+
+  const handleShowLogoutModal = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleCloseLogoutModal = () => {
+    setShowLogoutModal(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      handleCloseLogoutModal();
+      navigate('/login', { replace: true });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   return (
-    <StyledSidebar isOpen={isOpen}>
-      <button className="close-btn" onClick={() => setIsOpen(false)}>
-        <X size={24} />
-      </button>
-      <div className="text-center">
-        <img
-          style={{ height: "100px" }}
-          className="img-fluid text-center"
-          src={logo}
-          alt=""
-        />
-      </div>
-      <div className="brand">
-        <Settings size={24} />
-        Admin Panel
-      </div>
-      <Nav className="flex-column">
-        <Nav.Link
-          className={activePage === "dashboard" ? "active" : ""}
-          onClick={() => {
-            setActivePage("dashboard");
-            setIsOpen(false);
-          }}
-        >
-          <Home size={18} />
-          Dashboard
-        </Nav.Link>
-        <Nav.Link
-          className={activePage === "categories" ? "active" : ""}
-          onClick={() => {
-            setActivePage("categories");
-            setIsOpen(false);
-          }}
-        >
-          <Box size={18} />
-          Categories
-        </Nav.Link>
-        <Nav.Link
-          className={activePage === "products" ? "active" : ""}
-          onClick={() => {
-            setActivePage("products");
-            setIsOpen(false);
-          }}
-        >
-          <Box size={18} />
-          Products
-        </Nav.Link>
-      </Nav>
-    </StyledSidebar>
+    <>
+      <StyledSidebar isOpen={isOpen}>
+        <button className="close-btn" onClick={() => setIsOpen(false)}>
+          <X size={24} />
+        </button>
+        <div className="text-center">
+          <img
+            style={{ height: "100px" }}
+            className="img-fluid text-center"
+            src={logo}
+            alt="Rettai Pillayar logo"
+          />
+        </div>
+        <div className="brand">
+          <Settings size={24} />
+          Admin Panel
+        </div>
+        <Nav className="flex-column">
+          <Nav.Link
+            className={activePage === "dashboard" ? "active" : ""}
+            onClick={() => {
+              setActivePage("dashboard");
+              setIsOpen(false);
+            }}
+          >
+            <Home size={18} />
+            Dashboard
+          </Nav.Link>
+          <Nav.Link
+            className={activePage === "categories" ? "active" : ""}
+            onClick={() => {
+              setActivePage("categories");
+              setIsOpen(false);
+            }}
+          >
+            <Box size={18} />
+            Categories
+          </Nav.Link>
+          <Nav.Link
+            className={activePage === "products" ? "active" : ""}
+            onClick={() => {
+              setActivePage("products");
+              setIsOpen(false);
+            }}
+          >
+            <Box size={18} />
+            Products
+          </Nav.Link>
+          <Nav.Link
+            onClick={() => {
+              handleShowLogoutModal();
+              setIsOpen(false);
+            }}
+          >
+            <LogOut size={18} />
+            Logout
+          </Nav.Link>
+        </Nav>
+      </StyledSidebar>
+
+      <Modal show={showLogoutModal} onHide={handleCloseLogoutModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Logout</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to log out?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseLogoutModal}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleLogout}>
+            Logout
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
 export default Sidebar;
+

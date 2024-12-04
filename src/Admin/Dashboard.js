@@ -118,7 +118,7 @@ const Dashboard = () => {
         <Row>
           <Col xs={12} sm={6} md={4}>
             <Card>
-              <Card.Body>
+              <Card.Body  >
                 <Card.Title>Total Products</Card.Title>
                 <Card.Text>{totalProducts}</Card.Text>
               </Card.Body>
