@@ -5,7 +5,7 @@ import { db, storage } from '../firebase/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { ref, getDownloadURL } from 'firebase/storage';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Header from '../Components/Header/Header';
 import Footer from '../Components/Footer/Footer';
 import HomeBanner from '../Images/Pages/Home/Home Banner.png';
@@ -496,7 +496,9 @@ const Home = () => {
         <h3 style={{fontFamily:"lora"}} className='text-center my-4 fw-bolder'>Shop By Category Items</h3>
         <Row className='justify-content-center mx-0'>
           <Col xs={12} sm={6} md={4} lg={2} className="mb-3">
-            <img className='img-fluid w-100' src={Panchalogam} alt="Panchalogam" />
+          <Link to="/panjaloga" >
+          <img className='img-fluid w-100' src={Panchalogam} alt="Panchalogam" />
+          </Link>
           </Col>
           <Col xs={12} sm={6} md={4} lg={2} className="mb-3">
             <img className='img-fluid w-100' src={Rudhraksha} alt="Rudhraksha" />
