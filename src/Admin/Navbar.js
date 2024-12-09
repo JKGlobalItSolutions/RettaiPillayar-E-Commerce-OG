@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Menu, User } from 'lucide-react';
+import { useProfile } from './ProfileContext';
 
 const StyledNavbar = styled.nav`
   background-color: #ffffff;
@@ -12,10 +13,13 @@ const StyledNavbar = styled.nav`
   margin-bottom: 1rem;
 
   .menu-btn {
-    background: none;
+    background: #A41E19;
     border: none;
     cursor: pointer;
     display: none;
+
+    color:white;
+    border-radius:3px;
 
     @media (max-width: 991px) {
       display: block;
@@ -32,7 +36,7 @@ const StyledNavbar = styled.nav`
     align-items: center;
     cursor: pointer;
     overflow: hidden;
-    margin-left: auto; // This pushes the profile to the right
+    margin-left: auto;
 
     img {
       width: 100%;
@@ -43,39 +47,19 @@ const StyledNavbar = styled.nav`
 `;
 
 const Navbar = ({ setIsOpen }) => {
-  const [profileImage, setProfileImage] = useState(null);
-
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const { profilePicture } = useProfile();
 
   return (
-    <StyledNavbar>
-      <button className="menu-btn" onClick={() => setIsOpen(true)}>
+    <StyledNavbar className='my-3'>
+      <button className="menu-btn px-2 py-1 " onClick={() => setIsOpen(true)}>
         <Menu size={24} />
       </button>
       <div className="profile-upload">
-        <input
-          type="file"
-          id="profile-upload"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleImageUpload}
-        />
-        <label htmlFor="profile-upload">
-          {profileImage ? (
-            <img src={profileImage} alt="Profile" />
-          ) : (
-            <User size={24} />
-          )}
-        </label>
+        {profilePicture && profilePicture !== '/placeholder.svg' ? (
+          <img src={profilePicture} alt="Profile" />
+        ) : (
+          <User size={24} />
+        )}
       </div>
     </StyledNavbar>
   );

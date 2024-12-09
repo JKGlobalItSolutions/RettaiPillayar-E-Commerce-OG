@@ -77,7 +77,8 @@ const MobileMessage = styled.p`
 const Dashboard = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [totalCategories, setTotalCategories] = useState(0);
-  const [pageProductCounts, setPageProductCounts] = useState([]);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [analyticsData, setAnalyticsData] = useState([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -88,22 +89,28 @@ const Dashboard = () => {
       // Fetch products
       const productsCollection = collection(db, 'products');
       const productsSnapshot = await getDocs(productsCollection);
-      const productsList = productsSnapshot.docs.map(doc => doc.data());
-      setTotalProducts(productsList.length);
+      const productsCount = productsSnapshot.docs.length;
+      setTotalProducts(productsCount);
 
       // Fetch categories
       const categoriesCollection = collection(db, 'categories');
       const categoriesSnapshot = await getDocs(categoriesCollection);
-      setTotalCategories(categoriesSnapshot.docs.length);
+      const categoriesCount = categoriesSnapshot.docs.length;
+      setTotalCategories(categoriesCount);
 
-      // Count products per page
-      const pageCounts = productsList.reduce((acc, product) => {
-        acc[product.page] = (acc[product.page] || 0) + 1;
-        return acc;
-      }, {});
+      // Fetch orders
+      const ordersCollection = collection(db, 'orders');
+      const ordersSnapshot = await getDocs(ordersCollection);
+      const ordersCount = ordersSnapshot.docs.length;
+      setTotalOrders(ordersCount);
 
-      const pageCountsArray = Object.entries(pageCounts).map(([name, value]) => ({ name, value }));
-      setPageProductCounts(pageCountsArray);
+      // Prepare analytics data
+      const analyticsData = [
+        { name: 'Products', value: productsCount, fill: '#A41E19' },
+        { name: 'Categories', value: categoriesCount, fill: '#FFE31A' },
+        { name: 'Orders', value: ordersCount, fill: 'black' }
+      ];
+      setAnalyticsData(analyticsData);
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -113,12 +120,12 @@ const Dashboard = () => {
 
   return (
     <StyledDashboard>
-      <Container fluid>
+      <div>
         <h2>Dashboard</h2>
         <Row>
           <Col xs={12} sm={6} md={4}>
             <Card>
-              <Card.Body  >
+              <Card.Body>
                 <Card.Title>Total Products</Card.Title>
                 <Card.Text>{totalProducts}</Card.Text>
               </Card.Body>
@@ -132,21 +139,29 @@ const Dashboard = () => {
               </Card.Body>
             </Card>
           </Col>
+          <Col xs={12} sm={6} md={4}>
+            <Card>
+              <Card.Body>
+                <Card.Title>Total Orders</Card.Title>
+                <Card.Text>{totalOrders}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
         </Row>
         <Row className="mt-4">
           <Col>
             <Card>
               <Card.Body>
-                <Card.Title>Products per Page</Card.Title>
+                <Card.Title>Analytics Overview</Card.Title>
                 <ChartContainer>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={pageProductCounts}>
+                    <BarChart data={analyticsData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                       <YAxis tick={{ fontSize: 12 }} />
                       <Tooltip />
                       <Legend wrapperStyle={{ fontSize: 12 }} />
-                      <Bar dataKey="value" fill="#A41E19" name="Products" />
+                      <Bar dataKey="value" name="Count" />
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
@@ -155,7 +170,7 @@ const Dashboard = () => {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </div>
     </StyledDashboard>
   );
 };

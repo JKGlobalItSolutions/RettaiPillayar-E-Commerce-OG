@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Nav, Modal, Button } from "react-bootstrap";
 import styled from "styled-components";
-import { Home, Box, Settings, X, LogOut } from 'lucide-react';
+import { Home, Box, Settings, X, LogOut, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../firebase/firebase';
@@ -168,6 +168,26 @@ const Sidebar = ({ activePage, setActivePage, isOpen, setIsOpen }) => {
           >
             <Box size={18} />
             Products
+          </Nav.Link>
+          <Nav.Link
+            className={activePage === "orders" ? "active" : ""}
+            onClick={() => {
+              setActivePage("orders");
+              setIsOpen(false);
+            }}
+          >
+            <ShoppingBag size={18} />
+            Orders
+          </Nav.Link>
+          <Nav.Link
+            className={activePage === "settings" ? "active" : ""}
+            onClick={() => {
+              setActivePage("settings");
+              setIsOpen(false);
+            }}
+          >
+            <Settings size={18} />
+            Settings
           </Nav.Link>
           <Nav.Link
             onClick={() => {

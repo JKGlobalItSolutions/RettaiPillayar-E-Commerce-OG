@@ -3,6 +3,7 @@ import { Form, Button, Table, Modal } from 'react-bootstrap';
 import { db } from '../firebase/firebase';
 import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
 import styled from 'styled-components';
+import { Edit, Trash } from 'lucide-react';
 
 const StyledCategoryManagement = styled.div`
   h3 {
@@ -35,9 +36,16 @@ const StyledCategoryManagement = styled.div`
     }
   }
 
-  .btn-danger {
+  .btn-delete {
+    background-color: #000000;
+    border-color: #000000;
+    color: #ffffff;
     font-weight: 600;
     padding: 0.3rem 1rem;
+    &:hover, &:focus {
+      background-color: #333333;
+      border-color: #333333;
+    }
   }
 
   .table {
@@ -70,7 +78,7 @@ const StyledCategoryManagement = styled.div`
       font-size: 0.8rem;
     }
 
-    .btn-primary, .btn-danger {
+    .btn-primary, .btn-delete {
       padding: 0.3rem 0.8rem;
       font-size: 0.8rem;
     }
@@ -78,18 +86,33 @@ const StyledCategoryManagement = styled.div`
 `;
 
 const ResponsiveTable = styled(Table)`
-  @media (max-width: 576px) {
+  @media (max-width: 768px) {
     th, td {
       padding: 0.5rem;
     }
 
     .btn-group {
       display: flex;
-      flex-direction: column;
+      justify-content: flex-end;
     }
 
     .btn-group .btn {
-      margin-bottom: 0.5rem;
+      padding: 0.25rem 0.5rem;
+      margin-left: 0.5rem;
+    }
+
+    .btn-text {
+      display: none;
+    }
+
+    .btn-icon {
+      display: inline-block;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .btn-icon {
+      display: none;
     }
   }
 `;
@@ -246,14 +269,16 @@ const CategoryManagement = () => {
                     onClick={() => handleEditCategory(category)}
                     className="me-2"
                   >
-                    Edit
+                    <span className="btn-text">Edit</span>
+                    <span className="btn-icon"><Edit size={16} /></span>
                   </Button>
                   <Button
-                    style={{backgroundColor:"black",border:"none"}}
+                    className="btn-delete"
                     size="sm"
                     onClick={() => handleDeleteCategory(category)}
                   >
-                    Delete
+                    <span className="btn-text">Delete</span>
+                    <span className="btn-icon"><Trash size={16} /></span>
                   </Button>
                 </div>
               </td>
@@ -293,7 +318,7 @@ const CategoryManagement = () => {
               Update
             </Button>
           ) : (
-            <Button variant="danger" onClick={handleConfirmDelete}>
+            <Button className="btn-delete" onClick={handleConfirmDelete}>
               Delete
             </Button>
           )}

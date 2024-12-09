@@ -6,18 +6,22 @@ import Navbar from '../Admin/Navbar';
 import Dashboard from './Dashboard';
 import CategoryManagement from './CategoryManagement';
 import ProductManagement from './ProductManagement';
+import Settings from './Settings';
+import Orders from './Orders';
 
 const StyledAdminPanel = styled.div`
   background-color: #f0f2f5;
   min-height: 100vh;
 
+
   .content-area {
-    padding: 2rem;
+   
     transition: all 0.3s ease;
     margin-left: 250px;
 
     @media (max-width: 991px) {
       margin-left: 0;
+        padding:1rem;
     }
   }
 
@@ -25,7 +29,7 @@ const StyledAdminPanel = styled.div`
     background-color: #ffffff;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
+    padding: 20px;
     min-height: calc(100vh - 4rem);
     overflow-y: auto;
   }
@@ -38,7 +42,7 @@ const StyledAdminPanel = styled.div`
 
   @media (max-width: 768px) {
     .content-area {
-      padding: 1rem;
+      padding: 0px;
     }
   }
 `;
@@ -64,6 +68,8 @@ const AdminPanel = () => {
                 {activePage === 'dashboard' && <Dashboard />}
                 {activePage === 'categories' && <CategoryManagement />}
                 {activePage === 'products' && <ProductManagement />}
+                {activePage === 'orders' && <Orders />}
+                {activePage === 'settings' && <Settings />}
               </div>
             </Col>
           </Row>
@@ -74,3 +80,4 @@ const AdminPanel = () => {
 };
 
 export default AdminPanel;
+

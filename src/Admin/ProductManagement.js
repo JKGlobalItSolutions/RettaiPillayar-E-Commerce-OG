@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Table, Image, Modal } from 'react-bootstrap';
+import { Form, Button, Table, Image, Modal, InputGroup } from 'react-bootstrap';
 import { db, storage } from '../firebase/firebase';
 import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import styled from 'styled-components';
+import { Edit, Trash, Search } from 'lucide-react';
 
 const StyledProductManagement = styled.div`
   h3 {
@@ -48,21 +49,25 @@ const StyledProductManagement = styled.div`
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   }
   .btn-edit {
-    background-color: #ffc107;
-    border-color: #ffc107;
-    color: #212529;
+    background-color: #A41E19;
+    border-color: #A41E19;
+    color: #ffffff;
     &:hover, &:focus {
-      background-color: #e0a800;
-      border-color: #d39e00;
+      background-color: #7d1713;
+      border-color: #7d1713;
     }
   }
   .btn-delete {
-    background-color: #dc3545;
-    border-color: #dc3545;
+    background-color: #000000;
+    border-color: #000000;
     &:hover, &:focus {
-      background-color: #c82333;
-      border-color: #bd2130;
+      background-color: #333333;
+      border-color: #333333;
     }
+  }
+
+  .search-bar {
+    margin-bottom: 1rem;
   }
 
   @media (max-width: 768px) {
@@ -103,15 +108,29 @@ const ResponsiveTable = styled(Table)`
     th, td {
       padding: 0.5rem;
     }
+
+    .btn-group {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-group .btn {
+      padding: 0.25rem 0.5rem;
+      margin-left: 0.5rem;
+    }
+
+    .btn-text {
+      display: none;
+    }
+
+    .btn-icon {
+      display: inline-block;
+    }
   }
 
-  @media (max-width: 576px) {
-    th, td {
-     
-    }
-    .btn {
-      padding: 0.2rem 0.5rem;
-      font-size: 0.7rem;
+  @media (min-width: 769px) {
+    .btn-icon {
+      display: none;
     }
   }
 `;
@@ -120,6 +139,7 @@ const ProductManagement = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [productName, setProductName] = useState('');
   const [productImage, setProductImage] = useState(null);
@@ -130,7 +150,7 @@ const ProductManagement = () => {
   const [productPage, setProductPage] = useState('');
   const [editingProduct, setEditingProduct] = useState(null);
 
-  const pages = ['Panjaloga', 'Rudraksha', 'Karungali', 'Statues', 'Pure Silver', 'Maalai'];
+  const pages = ['Home', 'Panjaloga', 'Rudraksha', 'Karungali', 'Statues', 'Pure Silver', 'Maalai'];
 
   useEffect(() => {
     fetchProducts();
@@ -235,14 +255,31 @@ const ProductManagement = () => {
     setShowModal(true);
   };
 
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.page.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <StyledProductManagement  >
+    <StyledProductManagement>
       <h3>Product Management</h3>
       <Button variant="primary" onClick={() => setShowModal(true)}>
         Add New Product
       </Button>
 
       <h3 className="mt-5">Product List</h3>
+      <InputGroup className="search-bar">
+        <InputGroup.Text>
+          <Search size={20} />
+        </InputGroup.Text>
+        <Form.Control
+          type="text"
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </InputGroup>
       <ResponsiveTable striped bordered hover responsive>
         <thead>
           <tr>
@@ -256,7 +293,7 @@ const ProductManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <tr key={product.id}>
               <td>
                 <Image src={product.image} alt={product.name} thumbnail className="product-image-preview" />
@@ -267,38 +304,40 @@ const ProductManagement = () => {
               <td>{product.category}</td>
               <td>{product.page}</td>
               <td>
-                <Button
-                  style={{backgroundColor:"#A41E19",border:"none"}}
-                  variant='secondary'
-                  className="me-2 btn-edit text-light"
-                  onClick={() => handleEdit(product)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="danger"
-                  style={{backgroundColor:"black",border:"none"}}
-                  className="btn-delete"
-                  onClick={async () => {
-                    if (window.confirm('Are you sure you want to delete this product?')) {
-                      try {
-                        if (product.image) {
-                          const imageRef = ref(storage, product.image);
-                          await deleteObject(imageRef);
+                <div className="btn-group">
+                  <Button
+                    variant="secondary"
+                    className="me-2 btn-edit"
+                    onClick={() => handleEdit(product)}
+                  >
+                    <span className="btn-text">Edit</span>
+                    <span className="btn-icon"><Edit size={16} /></span>
+                  </Button>
+                  <Button
+                    variant="danger"
+                    className="btn-delete"
+                    onClick={async () => {
+                      if (window.confirm('Are you sure you want to delete this product?')) {
+                        try {
+                          if (product.image) {
+                            const imageRef = ref(storage, product.image);
+                            await deleteObject(imageRef);
+                          }
+                          const productRef = doc(db, 'products', product.id);
+                          await deleteDoc(productRef);
+                          fetchProducts();
+                          alert('Product deleted successfully!');
+                        } catch (error) {
+                          console.error('Error deleting product:', error);
+                          alert('Failed to delete product. Please try again.');
                         }
-                        const productRef = doc(db, 'products', product.id);
-                        await deleteDoc(productRef);
-                        fetchProducts();
-                        alert('Product deleted successfully!');
-                      } catch (error) {
-                        console.error('Error deleting product:', error);
-                        alert('Failed to delete product. Please try again.');
                       }
-                    }
-                  }}
-                >
-                  Delete
-                </Button>
+                    }}
+                  >
+                    <span className="btn-text">Delete</span>
+                    <span className="btn-icon"><Trash size={16} /></span>
+                  </Button>
+                </div>
               </td>
             </tr>
           ))}
